@@ -17,7 +17,8 @@ namespace VideoGame {
         /// </summary>
         public PlayerInventory Inventory { get; init; }
 
-        public Player() {
+        public Player()
+        {
             Inventory = new PlayerInventory(this);
         }
     }
