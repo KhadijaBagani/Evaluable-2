@@ -1,40 +1,25 @@
-
 namespace VideoGame.Inventory
 {
-
-    public partial class PlayerInventory
+    public abstract class Inventory
     {
-
-        /// <summary>
-        /// Jugador que contiene al inventario
-        /// </summary>
-        public Player parent { get; }
 
         /// <summary>
         /// Capacidad máxima del inventario
         /// </summary>
         public int Size { get; }
 
-        // TODO: Implementar cómo se almacenan los items 
-
         private List<IItem?> items;
 
-        /// <summary>
-        /// Crea el inventario asociado a un jugador
-        /// </summary>
-        /// <param name="player">Dueño del inventario</param>
-        /// <param name="size">Capacidad máxima del inventario</param>
-        public PlayerInventory(Player player, int size = 10)
+        public Inventory(int size = 10)
         {
-            this.parent = player;
             this.Size = size;
-            this.items = new List<IItem?>(size);
+            this.items = new List<IItem?>(new IItem[size]);
         }
-
+        
         /// <summary>
         /// TODO: Implementar
         /// </summary>
-        public bool Store(IItem item)
+        public virtual bool Store(IItem item)
         //Poder almacenar items y retorna false si no puede guardarlo
         {
             if (Contains(item))
@@ -48,16 +33,15 @@ namespace VideoGame.Inventory
             }
             items.Add(item);
             return true;
-
         }
 
         /// <summary>
         /// TODO: Implementar
         /// Similar a Store pero guarda el item en una posición concreta
         /// </summary>
-        public bool StoreAt(IItem item, int index)
-        {
+        public virtual bool StoreAt(IItem item, int index) {
 
+           
             if (index < 0 || index >= Size)
                 return false;
             // * Esto es para ayudarme
@@ -85,8 +69,8 @@ namespace VideoGame.Inventory
         /// TODO: Implementar 
         /// Poder ver el item almacenado en una posición
         /// </summary>
-        public IItem? GetItemAt(int index)
-
+        public virtual IItem? GetItemAt(int index)
+        
         {
             if (index < 0 || index >= items.Count)
             {
@@ -98,33 +82,30 @@ namespace VideoGame.Inventory
         /// <summary>
         /// TODO: Implementar
         /// </summary>
-        public bool Drop(IItem item)
-        {
+        public virtual bool Drop(IItem item) {
             int index = items.IndexOf(item);
-            if (index == -1) return false;
+            if (index == -1) return false; 
 
-            items[index] = null;
+            items[index] = null; 
             return true;
         }
 
         /// <summary>
         /// TODO: Implementar
         /// </summary>
-        public bool Drop(int index)
+        public virtual bool Drop(int index)
         {
-            if (index < 0 || index >= items.Count) return false;
-            if (items[index] == null) return false;
+            if (index < 0 || index >= Size || items[index] == null) return false;
 
             items[index] = null;
             return true;
         }
-
+        
 
         /// <summary>
         /// TODO: Implementar
         /// </summary>
-        public ICollection<IItem?> ListItems()
-        {
+        public virtual ICollection<IItem?> ListItems() {
 
             return items.Where(item => item != null).ToList();
         }
@@ -133,8 +114,7 @@ namespace VideoGame.Inventory
         /// TODO: Implementar
         /// Devuelve true si el item especificado está almacenado en el inventario.
         /// </summary>
-        public bool Contains(IItem item)
-        {
+        public virtual bool Contains(IItem item) {
             return items.Contains(item);
         }
 
@@ -142,16 +122,15 @@ namespace VideoGame.Inventory
         /// TODO: Implementar
         /// Encuentra el primer Item que cumpla la condición especificada en el delegado.
         /// </summary>
-        public IItem? Find(Func<IItem, bool> condition)
-        {
-            return items.FirstOrDefault(item => item != null && condition(item));
+        public virtual IItem? Find(Func<IItem, bool> condition) {
+             return items.FirstOrDefault(item => item != null && condition(item));
         }
 
         /// <summary>
         /// TODO: Implementar
         /// Filtra por subtipo de item que busca.
         /// </summary>
-        public T? Find<T>(Func<T, bool> condition) where T : class, IItem
+        public virtual T? Find<T>(Func<T, bool> condition) where T : class, IItem
         {
             return items.OfType<T>().FirstOrDefault(condition);
         }
@@ -160,20 +139,18 @@ namespace VideoGame.Inventory
         /// TODO: Implementar
         /// Borra el contenido del inventario.
         /// </summary>
-        public void Clear()
-        {
-            for (int i = 0; i < items.Count; i++)
+        public virtual void Clear() {
+          for (int i = 0; i < items.Count; i++)
             {
                 items[i] = null;
             }
         }
-
+        
         /// <summary>
         /// TODO: Implementar
         /// Transfiere un item desde el inventario actual a otro inventario objetivo. 
         /// </summary>
-        public bool Transfer(IItem item, PlayerInventory target)
-        {
+        public virtual bool Transfer(IItem item, PlayerInventory target){
             // * Esto es para ayudarme
             // Si el item no está en este inventario, no se puede transferir
             if (!Contains(item)) return false;
