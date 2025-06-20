@@ -48,6 +48,5 @@ internal class Program
         //GetItemAT
         inventario.GetItemAt(3);
 
-      
     }
 }
